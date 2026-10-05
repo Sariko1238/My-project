@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Хроники Бездны — Dungeon Crawler RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-wrapper">
+    <!-- Верхняя панель (Header HUD) -->
+    <header class="hud-top">
+      <div class="brand">
+        <span class="icon-flame">🔥</span>
+        <h1>Хроники Бездны</h1>
+        <span class="badge floor-badge" id="floorBadge">Этаж 1</span>
+      </div>
+
+      <div class="top-stats">
+        <div class="stat-pill">
+          <span class="stat-label">Уровень:</span>
+          <span class="stat-value highlight" id="playerLevel">1</span>
+        </div>
+        <div class="xp-container">
+          <div class="xp-bar-bg">
+            <div class="xp-bar-fill" id="xpBarFill" style="width: 0%"></div>
+          </div>
+          <span class="xp-text" id="xpText">0 / 50 XP</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Очки:</span>
+          <span class="stat-value gold" id="playerScore">0</span>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <button id="btnAudioToggle" class="btn-icon" title="Звук (Вкл/Выкл)">🔊</button>
+        <button id="btnHelp" class="btn-icon" title="Справка по управлению">❓</button>
+        <button id="btnRestart" class="btn-icon" title="Начать заново">🔄</button>
+      </div>
+    </header>
+
+    <!-- Основной игровой экран -->
+    <main class="main-layout">
+      <!-- Левая панель: Характеристики героя и Экипировка -->
+      <aside class="sidebar side-left">
+        <div class="panel hero-card">
+          <div class="hero-avatar">
+            <div class="avatar-glow"></div>
+            <span class="hero-emoji">🧙‍♂️</span>
+          </div>
+          <div class="hero-vitals">
+            <!-- HP Bar -->
+            <div class="vital-group">
+              <div class="vital-labels">
+                <span class="vital-title">Здоровье (HP)</span>
+                <span class="vital-num" id="hpText">100 / 100</span>
+              </div>
+              <div class="bar-container hp-container">
+                <div class="bar-fill hp-fill" id="hpBar" style="width: 100%"></div>
+                <div class="shield-fill" id="shieldBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- MP Bar -->
+            <div class="vital-group">
+              <div class="vital-labels">
+                <span class="vital-title">Мана (MP)</span>
+                <span class="vital-num" id="mpText">50 / 50</span>
+              </div>
+              <div class="bar-container mp-container">
+                <div class="bar-fill mp-fill" id="mpBar" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Параметры -->
+        <div class="panel stats-panel">
+          <h3 class="panel-title">Боевые параметры</h3>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-icon">⚔️</span>
+              <div class="stat-meta">
+                <span class="s-name">Атака</span>
+                <span class="s-val text-red" id="statAttack">14</span>
+              </div>
+            </div>
+            <div class="stat-box">
+              <span class="stat-icon">🛡️</span>
+              <div class="stat-meta">
+                <span class="s-name">Защита</span>
+                <span class="s-val text-blue" id="statDefense">4</span>
+              </div>
+            </div>
+            <div class="stat-box">
+              <span class="stat-icon">⚡</span>
+              <div class="stat-meta">
+                <span class="s-name">Крит</span>
+                <span class="s-val text-yellow" id="statCrit">10%</span>
+              </div>
+            </div>
+            <div class="stat-box">
+              <span class="stat-icon">💨</span>
+              <div class="stat-meta">
+                <span class="s-name">Уворот</span>
+                <span class="s-val text-green" id="statDodge">5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Снаряжение -->
+        <div class="panel equipment-panel">
+          <h3 class="panel-title">Снаряжение</h3>
+          <div class="equip-slots">
+            <div class="equip-slot" id="slotWeapon" title="Оружие">
+              <span class="slot-icon">🗡️</span>
+              <div class="slot-info">
+                <span class="slot-category">Оружие</span>
+                <span class="slot-item-name" id="equipWeaponName">Кулаки</span>
+              </div>
+            </div>
+            <div class="equip-slot" id="slotArmor" title="Доспех">
+              <span class="slot-icon">🥋</span>
+              <div class="slot-info">
+                <span class="slot-category">Доспех</span>
+                <span class="slot-item-name" id="equipArmorName">Тканевая роба</span>
+              </div>
+            </div>
+            <div class="equip-slot" id="slotAccessory" title="Амулет">
+              <span class="slot-icon">📿</span>
+              <div class="slot-info">
+                <span class="slot-category">Амулет</span>
+                <span class="slot-item-name" id="equipAccessoryName">Нет</span>
+              </div>
+            </div>
+            <div class="equip-slot" id="slotBoots" title="Сапоги">
+              <span class="slot-icon">👢</span>
+              <div class="slot-info">
+                <span class="slot-category">Сапоги</span>
+                <span class="slot-item-name" id="equipBootsName">Нет</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-inventory-open" id="btnOpenInventory">
+          <span>🎒 Инвентарь (I)</span>
+          <span class="inv-count-badge" id="invCountBadge">0/16</span>
+        </button>
+      </aside>
+
+      <!-- Центральная зона: Канвас подземелья -->
+      <section class="viewport-section">
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="gameCanvas" width="800" height="520"></canvas>
+          <div class="ambient-vignette"></div>
+
+          <!-- Наложение подсказки на экране -->
+          <div class="dungeon-alert" id="dungeonAlert"></div>
+        </div>
+
+        <!-- Нижняя панель действий (Способности и управление) -->
+        <div class="action-bar">
+          <!-- Способности 1-4 -->
+          <div class="skills-row">
+            <button class="skill-btn" id="skill1" data-skill="1">
+              <span class="skill-key">1</span>
+              <span class="skill-icon">🔥</span>
+              <div class="skill-meta">
+                <span class="skill-name">Огненный шар</span>
+                <span class="skill-cost">15 MP</span>
+              </div>
+              <div class="skill-cd-overlay" id="cd1"></div>
+            </button>
+
+            <button class="skill-btn" id="skill2" data-skill="2">
+              <span class="skill-key">2</span>
+              <span class="skill-icon">🌪️</span>
+              <div class="skill-meta">
+                <span class="skill-name">Вихрь клинков</span>
+                <span class="skill-cost">20 MP</span>
+              </div>
+              <div class="skill-cd-overlay" id="cd2"></div>
+            </button>
+
+            <button class="skill-btn" id="skill3" data-skill="3">
+              <span class="skill-key">3</span>
+              <span class="skill-icon">👤</span>
+              <div class="skill-meta">
+                <span class="skill-name">Теневой шаг</span>
+                <span class="skill-cost">12 MP</span>
+              </div>
+              <div class="skill-cd-overlay" id="cd3"></div>
+            </button>
+
+            <button class="skill-btn" id="skill4" data-skill="4">
+              <span class="skill-key">4</span>
+              <span class="skill-icon">🪨</span>
+              <div class="skill-meta">
+                <span class="skill-name">Каменная кожа</span>
+                <span class="skill-cost">10 MP</span>
+              </div>
+              <div class="skill-cd-overlay" id="cd4"></div>
+            </button>
+          </div>
+
+          <!-- Вспомогательные кнопки управления -->
+          <div class="action-quick-buttons">
+            <button class="btn-action" id="btnWait" title="Пропустить ход / выждать">
+              <span class="kbd-hint">Space</span> ⏳ Ждать
+            </button>
+            <button class="btn-action" id="btnStairs" title="Спуститься глубже на лестнице">
+              <span class="kbd-hint">&gt;</span> 🪜 Спуск
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Правая панель: Журнал событий и Мини-карта -->
+      <aside class="sidebar side-right">
+        <!-- Журнал событий -->
+        <div class="panel log-panel">
+          <div class="log-header">
+            <h3 class="panel-title">Хроника битвы</h3>
+            <span class="log-indicator"></span>
+          </div>
+          <div class="log-content" id="combatLog">
+            <!-- Записи добавляются динамически -->
+          </div>
+        </div>
+
+        <!-- Экранные кнопки движения (для мыши и планшетов) -->
+        <div class="panel dpad-panel">
+          <h3 class="panel-title">Движение (WASD)</h3>
+          <div class="dpad-grid">
+            <div></div>
+            <button class="dpad-btn" id="dpadUp" title="Вверх (W)">⬆️</button>
+            <div></div>
+            <button class="dpad-btn" id="dpadLeft" title="Влево (A)">⬅️</button>
+            <button class="dpad-btn" id="dpadCenter" title="Выждать (Space)">⌛</button>
+            <button class="dpad-btn" id="dpadRight" title="Вправо (D)">➡️</button>
+            <div></div>
+            <button class="dpad-btn" id="dpadDown" title="Вниз (S)">⬇️</button>
+            <div></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Модальное окно инвентаря -->
+  <div class="modal-backdrop" id="inventoryModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🎒 Инвентарь искателя приключений</h2>
+        <button class="modal-close" id="btnCloseInventory">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="inventory-grid" id="inventoryGrid">
+          <!-- Слоты инвентаря генерируются кодом -->
+        </div>
+        <div class="item-details-card" id="itemDetails">
+          <p class="empty-hint">Выберите предмет в инвентаре для просмотра свойств.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно справки -->
+  <div class="modal-backdrop" id="helpModal">
+    <div class="modal-card modal-help">
+      <div class="modal-header">
+        <h2>📜 Руководство искателя приключений</h2>
+        <button class="modal-close" id="btnCloseHelp">✕</button>
+      </div>
+      <div class="modal-body help-body">
+        <div class="help-section">
+          <h3>🎮 Управление</h3>
+          <ul class="help-list">
+            <li><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> или <kbd>Стрелки</kbd> — перемещение героя по подземелью и атака при шаге во врага.</li>
+            <li><kbd>Клик мыши</kbd> — кликните по соседней клетке или врагу для быстрого хода/удара.</li>
+            <li><kbd>Пробел</kbd> — пропустить ход (выждать и восстановить ману).</li>
+            <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> — использование мощных заклинаний и умений.</li>
+            <li><kbd>I</kbd> — открыть / закрыть инвентарь.</li>
+            <li><kbd>&gt;</kbd> — спуститься на следующий этаж (стоя на лестнице).</li>
+          </ul>
+        </div>
+        <div class="help-section">
+          <h3>🗺️ Обозначения на карте</h3>
+          <div class="legend-grid">
+            <div class="legend-item"><span class="legend-icon">🧙‍♂️</span> Герой (Вы)</div>
+            <div class="legend-item"><span class="legend-icon">🚪</span> Двери (открываются при шаге)</div>
+            <div class="legend-item"><span class="legend-icon">🧰</span> Сундуки с редким снаряжением</div>
+            <div class="legend-item"><span class="legend-icon">✨</span> Алтарь Богов (лечение и благословение)</div>
+            <div class="legend-item"><span class="legend-icon">🪜</span> Лестница в глубь бездны</div>
+            <div class="legend-item"><span class="legend-icon">🩸</span> Опасные ловушки в полу</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно поражения (Game Over) -->
+  <div class="modal-backdrop" id="gameOverModal">
+    <div class="modal-card modal-gameover">
+      <h2 class="gameover-title">Вы пали жертвой Тёмной Бездны</h2>
+      <p class="gameover-subtitle">Ваша душа пополнила сонм вечных теней...</p>
+      
+      <div class="gameover-stats">
+        <div class="go-stat">
+          <span class="go-label">Достигнутый этаж</span>
+          <span class="go-val" id="goFloor">1</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-label">Уровень героя</span>
+          <span class="go-val" id="goLevel">1</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-label">Финальный счёт</span>
+          <span class="go-val gold" id="goScore">0</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-label">Прожито ходов</span>
+          <span class="go-val" id="goTurns">0</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btnRestartGame">Вступить в Бездну вновь</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
