@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Хроники Бездны — Dungeon Crawler RPG</title>
+  <title>Хроники Крипера — Minecraft Dungeon RPG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -14,9 +14,26 @@
     <!-- Верхняя панель (Header HUD) -->
     <header class="hud-top">
       <div class="brand">
-        <span class="icon-flame">🔥</span>
-        <h1>Хроники Бездны</h1>
-        <span class="badge floor-badge" id="floorBadge">Этаж 1</span>
+        <span class="icon-flame">💥</span>
+        <div class="brand-text">
+          <h1>Хроники Крипера</h1>
+          <span class="brand-sub">Minecraft RPG</span>
+        </div>
+        <div class="stage-info-group">
+          <span class="badge stage-badge" id="stageBadge">Этап 1: Верхний мир</span>
+          <span class="badge floor-badge" id="floorBadge">Уровень 1-1</span>
+        </div>
+      </div>
+
+      <div class="stage-progress-bar-container" title="Прогресс текущего этапа (3 уровня)">
+        <span class="sp-label">Прогресс биома:</span>
+        <div class="stage-progress" id="stageProgress">
+          <span class="sp-dot active" id="spDot1" title="Уровень 1">1</span>
+          <span class="sp-line" id="spLine1"></span>
+          <span class="sp-dot" id="spDot2" title="Уровень 2">2</span>
+          <span class="sp-line" id="spLine2"></span>
+          <span class="sp-dot boss-dot" id="spDot3" title="Уровень 3 — Логово Босса">👑 Босс</span>
+        </div>
       </div>
 
       <div class="top-stats">
@@ -38,7 +55,7 @@
 
       <div class="top-controls">
         <button id="btnAudioToggle" class="btn-icon" title="Звук (Вкл/Выкл)">🔊</button>
-        <button id="btnHelp" class="btn-icon" title="Справка по управлению">❓</button>
+        <button id="btnHelp" class="btn-icon" title="Справка по управлению и этапам">❓</button>
         <button id="btnRestart" class="btn-icon" title="Начать заново">🔄</button>
       </div>
     </header>
@@ -48,9 +65,18 @@
       <!-- Левая панель: Характеристики героя и Экипировка -->
       <aside class="sidebar side-left">
         <div class="panel hero-card">
-          <div class="hero-avatar">
-            <div class="avatar-glow"></div>
-            <span class="hero-emoji">🧙‍♂️</span>
+          <div class="hero-header-row">
+            <div class="hero-avatar">
+              <div class="avatar-glow"></div>
+              <canvas id="heroAvatarCanvas" width="58" height="58" class="hero-creeper-canvas"></canvas>
+            </div>
+            <div class="hero-identity">
+              <div class="hero-name-row">
+                <span class="hero-name" id="heroName">Крипер</span>
+                <span class="hero-charged-badge" id="heroChargedBadge" style="display: none;">⚡ ЗАРЯЖЕН</span>
+              </div>
+              <span class="hero-role">💥 Мастер Детонации</span>
+            </div>
           </div>
           <div class="hero-vitals">
             <!-- HP Bar -->
@@ -168,41 +194,41 @@
         <div class="action-bar">
           <!-- Способности 1-4 -->
           <div class="skills-row">
-            <button class="skill-btn" id="skill1" data-skill="1">
+            <button class="skill-btn" id="skill1" data-skill="1" title="Тсссс... БУМ! Взрывная волна вокруг Крипера, наносящая огромный урон врагам">
               <span class="skill-key">1</span>
-              <span class="skill-icon">🔥</span>
+              <span class="skill-icon">💥</span>
               <div class="skill-meta">
-                <span class="skill-name">Огненный шар</span>
+                <span class="skill-name">Детонация</span>
                 <span class="skill-cost">15 MP</span>
               </div>
               <div class="skill-cd-overlay" id="cd1"></div>
             </button>
 
-            <button class="skill-btn" id="skill2" data-skill="2">
+            <button class="skill-btn" id="skill2" data-skill="2" title="Выброс пороховых искр во все стороны, поражающий врагов поблизости">
               <span class="skill-key">2</span>
               <span class="skill-icon">🌪️</span>
               <div class="skill-meta">
-                <span class="skill-name">Вихрь клинков</span>
+                <span class="skill-name">Пороховой вихрь</span>
                 <span class="skill-cost">20 MP</span>
               </div>
               <div class="skill-cd-overlay" id="cd2"></div>
             </button>
 
-            <button class="skill-btn" id="skill3" data-skill="3">
+            <button class="skill-btn" id="skill3" data-skill="3" title="Бесшумный рывок за спину врага и внезапный критический взрыв!">
               <span class="skill-key">3</span>
-              <span class="skill-icon">👤</span>
+              <span class="skill-icon">👣</span>
               <div class="skill-meta">
-                <span class="skill-name">Теневой шаг</span>
+                <span class="skill-name">Скрытный шаг</span>
                 <span class="skill-cost">12 MP</span>
               </div>
               <div class="skill-cd-overlay" id="cd3"></div>
             </button>
 
-            <button class="skill-btn" id="skill4" data-skill="4">
+            <button class="skill-btn" id="skill4" data-skill="4" title="Призывает удар молнии! Превращает в Заряженного Крипера (+щит, +электро-аура)">
               <span class="skill-key">4</span>
-              <span class="skill-icon">🪨</span>
+              <span class="skill-icon">⚡</span>
               <div class="skill-meta">
-                <span class="skill-name">Каменная кожа</span>
+                <span class="skill-name">Заряд молнии</span>
                 <span class="skill-cost">10 MP</span>
               </div>
               <div class="skill-cd-overlay" id="cd4"></div>
@@ -291,14 +317,24 @@
           </ul>
         </div>
         <div class="help-section">
-          <h3>🗺️ Обозначения на карте</h3>
+          <h3>🗺️ Обозначения и Биомы</h3>
           <div class="legend-grid">
-            <div class="legend-item"><span class="legend-icon">🧙‍♂️</span> Герой (Вы)</div>
-            <div class="legend-item"><span class="legend-icon">🚪</span> Двери (открываются при шаге)</div>
-            <div class="legend-item"><span class="legend-icon">🧰</span> Сундуки с редким снаряжением</div>
-            <div class="legend-item"><span class="legend-icon">✨</span> Алтарь Богов (лечение и благословение)</div>
-            <div class="legend-item"><span class="legend-icon">🪜</span> Лестница в глубь бездны</div>
-            <div class="legend-item"><span class="legend-icon">🩸</span> Опасные ловушки в полу</div>
+            <div class="legend-item"><span class="legend-icon">🟩</span> Крипер (Вы)</div>
+            <div class="legend-item"><span class="legend-icon">👑</span> Босс этапа (на 3-м уровне)</div>
+            <div class="legend-item"><span class="legend-icon">🚪</span> Двери (открываются шагом)</div>
+            <div class="legend-item"><span class="legend-icon">🧰</span> Сундуки с редким лутом</div>
+            <div class="legend-item"><span class="legend-icon">✨</span> Алтарь исцеления и щита</div>
+            <div class="legend-item"><span class="legend-icon">🪜</span> Переход в глубь биома</div>
+          </div>
+          <div class="biomes-guide">
+            <h4 style="margin: 12px 0 6px; font-size: 13px; color: var(--accent-gold);">🌍 Этапы игры (5 биомов):</h4>
+            <ol style="padding-left: 20px; font-size: 12px; line-height: 1.6; color: var(--text-muted);">
+              <li><b>Этап 1: Верхний мир</b> — Пещеры и дубовый лес. Босс: Король Пауков.</li>
+              <li><b>Этап 2: Заброшенная шахта</b> — Деревянные крепи и рельсы. Босс: Каменный Голем.</li>
+              <li><b>Этап 3: Глубокая тьма</b> — Скалк-пещеры. Босс: Хранитель Глубин (Варден).</li>
+              <li><b>Этап 4: Незер</b> — Адская крепость из багрового камня. Босс: Владыка Ифритов.</li>
+              <li><b>Этап 5: Край</b> — Цитадель Энда. Финальный мега-босс: Дракон Края!</li>
+            </ol>
           </div>
         </div>
       </div>
@@ -308,29 +344,80 @@
   <!-- Модальное окно поражения (Game Over) -->
   <div class="modal-backdrop" id="gameOverModal">
     <div class="modal-card modal-gameover">
-      <h2 class="gameover-title">Вы пали жертвой Тёмной Бездны</h2>
-      <p class="gameover-subtitle">Ваша душа пополнила сонм вечных теней...</p>
+      <h2 class="gameover-title">Крипер был нейтрализован</h2>
+      <p class="gameover-subtitle">Порох иссяк, но ваш подвиг не будет забыт...</p>
       
       <div class="gameover-stats">
         <div class="go-stat">
-          <span class="go-label">Достигнутый этаж</span>
+          <span class="go-label">Достигнутый этап</span>
+          <span class="go-val text-green" id="goStage">Этап 1</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-label">Уровень этажа</span>
           <span class="go-val" id="goFloor">1</span>
         </div>
         <div class="go-stat">
-          <span class="go-label">Уровень героя</span>
+          <span class="go-label">Уровень Крипера</span>
           <span class="go-val" id="goLevel">1</span>
         </div>
         <div class="go-stat">
           <span class="go-label">Финальный счёт</span>
           <span class="go-val gold" id="goScore">0</span>
         </div>
-        <div class="go-stat">
-          <span class="go-label">Прожито ходов</span>
-          <span class="go-val" id="goTurns">0</span>
-        </div>
       </div>
 
       <button class="btn-primary" id="btnRestartGame">Вступить в Бездну вновь</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно завершения этапа (Выбор дара Крипера) -->
+  <div class="modal-backdrop" id="stageCompleteModal">
+    <div class="modal-card modal-stage-complete">
+      <div class="stage-complete-banner">
+        <span class="sc-badge">🎉 БИОМ ПОКОРЁН!</span>
+        <h2 id="scTitle">Этап 1: Верхний мир завершён!</h2>
+        <p class="sc-subtitle" id="scSubtitle">Босс этапа повержен! Выберите благословение Крипера перед спуском в следующий биом:</p>
+      </div>
+
+      <div class="perks-container" id="perksContainer">
+        <!-- 3 случайных перка генерируются кодом -->
+      </div>
+
+      <div class="sc-footer">
+        <button class="btn-primary btn-next-stage" id="btnNextStage">Войти в следующий биом ⏩</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно абсолютной победы (Victory / Ender Dragon) -->
+  <div class="modal-backdrop" id="victoryModal">
+    <div class="modal-card modal-victory">
+      <div class="victory-header">
+        <div class="trophy-anim">🏆</div>
+        <h2 class="victory-title">ВЕЛИКАЯ ПОБЕДА!</h2>
+        <p class="victory-subtitle">Дракон Края повержен! Вы покорили все 5 этапов и стали Легендарным Крипером!</p>
+      </div>
+
+      <div class="victory-stats">
+        <div class="v-stat">
+          <span class="v-label">Пройдено этапов</span>
+          <span class="v-val text-green">5 / 5 (100%)</span>
+        </div>
+        <div class="v-stat">
+          <span class="v-label">Уровень Крипера</span>
+          <span class="v-val" id="vicLevel">10</span>
+        </div>
+        <div class="v-stat">
+          <span class="v-label">Итоговый счёт</span>
+          <span class="v-val gold" id="vicScore">2500</span>
+        </div>
+        <div class="v-stat">
+          <span class="v-label">Сделано ходов</span>
+          <span class="v-val" id="vicTurns">320</span>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-victory-restart" id="btnVictoryRestart">👑 Начать Новую Игру+ (New Game+)</button>
     </div>
   </div>
 
